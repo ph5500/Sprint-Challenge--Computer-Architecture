@@ -23,6 +23,8 @@ class CPU:
             0b01000110: self.POP,
             0b00010001: self.RET,
             0b01010000: self.CALL,
+            0b10100111: self.CMP,
+            0b01010110: self.JNE,
             0b01010101: self.JEQ,
             0b01010100: self.JMP
 
@@ -145,6 +147,37 @@ class CPU:
             self.pc = address
         else:
             self.pc += 2
+            
+    def JNE(self):
+        """
+        if 'E' flag is clear(false, 0), go to the address stored in the given register
+        """
+        address = self.reg[self.operand_a]
+        
+        if self.FL == 0:
+            self.pc = address
+        else:
+            self.pc += 2
+
+    def CMP(self):
+        valueA = self.reg[self.operand_a]
+        valueB = self.reg[self.operand_b]
+        
+        if valueA == valueB: #Flag -> 0000LGE
+            self.FL = 0b0000100
+        
+        if valueA < valueB:
+            self.FL = 0b00000100
+        
+        if valueA > valueB:
+            self.FL = 0b00000010
+        print(self.FL)
+        
+        self.pc += 3
+
+
+
+
 
     def run(self):
         """Run the CPU."""
@@ -152,11 +185,11 @@ class CPU:
         while True:
             # ir == Instruction Register
             ir = self.ram_read(self.pc)
-            operand_a = self.ram_read(self.pc + 1)
-            operand_b = self.ram_read(self.pc + 2)
+            self.operand_a = self.ram_read(self.pc + 1)
+            self.operand_b = self.ram_read(self.pc + 2)
 
             if ir in self.branch_table:
-                self.branch_table[ir](operand_a, operand_b)
+                self.branch_table[ir]()
             else:
                 print(f'Unknown instruction {ir} at address {self.pc}')
                 sys.exit()
