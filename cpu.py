@@ -26,7 +26,7 @@ class CPU:
             0b10100111: self.CMP,
             0b01010110: self.JNE,
             0b01010101: self.JEQ,
-            0b01010100: self.JMP
+            0b01010100: self.JMP,
 
         }
         self.operand_a = None
@@ -154,7 +154,7 @@ class CPU:
         """
         address = self.reg[self.operand_a]
         
-        if self.FL == 0:
+        if self.FL != 1:
             self.pc = address
         else:
             self.pc += 2
@@ -164,7 +164,7 @@ class CPU:
         valueB = self.reg[self.operand_b]
         
         if valueA == valueB: #Flag -> 0000LGE
-            self.FL = 0b0000100
+            self.FL = 0b00000001
         
         if valueA < valueB:
             self.FL = 0b00000100
